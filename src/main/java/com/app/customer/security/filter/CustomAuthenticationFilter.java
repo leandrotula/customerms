@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.app.customer.security.SecurityConstants.*;
+
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -33,8 +35,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    String username = request.getParameter("username");
-    String password = request.getParameter("password");
+    String username = request.getParameter(USERNAME);
+    String password = request.getParameter(PASSWORD);
     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
     return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -61,12 +63,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
         .sign(algorithm);
 
-
-  //  response.setHeader("access_token", accessToken);
-   // response.setHeader("refresh_token", refreshToken);
     final Map<String, String> tokens = new HashMap<>();
-    tokens.put("access_token", accessToken);
-    tokens.put("refresh_token", refreshToken);
+    tokens.put(ACCESS_TOKEN, accessToken);
+    tokens.put(REFRESH_TOKEN, refreshToken);
 
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     super.successfulAuthentication(request, response, chain, authentication);

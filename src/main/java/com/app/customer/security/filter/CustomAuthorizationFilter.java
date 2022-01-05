@@ -1,6 +1,5 @@
 package com.app.customer.security.filter;
 
-import com.app.customer.security.SecurityConstants;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -22,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.app.customer.security.SecurityConstants.*;
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -33,7 +33,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-    if(request.getServletPath().equals(SecurityConstants.LOGIN) || request.getServletPath().equals("/v1/token/refresh")) {
+    if(request.getServletPath().equals(LOGIN) || request.getServletPath().equals(REFRESH_TOKEN_API)) {
       filterChain.doFilter(request, response);
     } else {
       String authorizationHeader = request.getHeader(AUTHORIZATION);
@@ -63,7 +63,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
           log.error("Error logging in : {} ", ex.getMessage());
           response.setHeader("error", ex.getMessage());
           response.setStatus(FORBIDDEN.value());
-         // response.sendError(FORBIDDEN.value());
           Map<String, String> errors = new HashMap<>();
           errors.put("error_message", ex.getMessage());
           response.setContentType(APPLICATION_JSON_VALUE);

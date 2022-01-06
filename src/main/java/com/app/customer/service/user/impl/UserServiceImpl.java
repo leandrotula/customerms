@@ -1,8 +1,11 @@
 package com.app.customer.service.user.impl;
 
+import com.app.customer.domain.Status;
 import com.app.customer.domain.UserEntity;
 import com.app.customer.repository.RoleRepository;
 import com.app.customer.repository.UserRepository;
+import com.app.customer.resource.domain.user.StatusRequest;
+import com.app.customer.resource.domain.user.UserRequest;
 import com.app.customer.service.domain.User;
 import com.app.customer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
   public void assignRoleToUser(String username, String roleName) {
 
     log.info("Adding role {} to username {} ", roleName, username);
-    Optional<UserEntity> byUsername = userRepository.findByUsername(username);
+    Optional<UserEntity> byUsername = userRepository.findByUsernameAndStatusIgnoreCase(username, Status.ACTIVE.name());
 
     byUsername.ifPresent(user -> roleRepository.findByName(roleName).ifPresent(roleFound -> user.getRoles().add(roleFound)));
 
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
   public Optional<User> getUser(String username) {
 
     log.info("fetching user {} ", username);
-    Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+    Optional<UserEntity> userEntity = userRepository.findByUsernameAndStatusIgnoreCase(username, Status.ACTIVE.name());
     return userEntity.map(this::convertToUser);
   }
 
@@ -72,6 +74,52 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  @Override
+  public void delete(Long userId) {
+
+    Optional<UserEntity> optionalUser = userRepository.findByIdAndStatus(userId, Status.ACTIVE.name());
+
+    optionalUser.map(user -> {
+      user.setStatus(Status.INACTIVE.name());
+      return userRepository.save(user);
+    }).orElseThrow(()-> new RuntimeException("User not found"));
+  }
+
+  @Override
+  public User update(Long userId, String password, UserRequest userRequest) {
+    Optional<UserEntity> userFound = userRepository.findById(userId);
+    if (userFound.isPresent()) {
+      UserEntity userEntity = userFound.get();
+      userEntity.setStatus(userRequest.getStatus().name());
+      userEntity.setUsername(userRequest.getUsername());
+      userEntity.setName(userRequest.getName());
+      userEntity.setPassword(passwordEncoder.encode(password));
+      UserEntity updatedUser = userRepository.save(userEntity);
+
+      return convertToUser(updatedUser);
+    } else {
+      throw new RuntimeException("User not found");
+    }
+  }
+
+  @Override
+  public User updateStatus(Long userId, StatusRequest statusRequest) {
+    Optional<UserEntity> userFound = userRepository.findByIdAndStatus(userId, Status.ACTIVE.name());
+
+    if (userFound.isPresent()) {
+      UserEntity userEntity = userFound.get();
+      userEntity.setStatus(statusRequest.getStatus().name());
+
+      UserEntity newUserWithUpdatedStatus = userRepository.save(userEntity);
+      UserEntity savedUser = userRepository.save(newUserWithUpdatedStatus);
+
+      return convertToUser(savedUser);
+    } else {
+      throw new RuntimeException("User not found");
+    }
+  }
+
+  // TODO extract mappers
   private List<User> mapToUserDomain(List<UserEntity> userEntities) {
     return userEntities.stream().map(this::convertToUser).collect(Collectors.toList());
   }

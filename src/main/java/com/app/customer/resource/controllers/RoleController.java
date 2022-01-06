@@ -1,4 +1,4 @@
-package com.app.customer.resource;
+package com.app.customer.resource.controllers;
 
 import com.app.customer.resource.domain.role.RoleRequest;
 import com.app.customer.resource.domain.role.RoleResponse;

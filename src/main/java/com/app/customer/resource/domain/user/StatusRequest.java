@@ -4,9 +4,7 @@ import com.app.customer.domain.Status;
 import lombok.Data;
 
 @Data
-public class UserRequest {
+public class StatusRequest {
 
-  private String name;
-  private String username;
   private Status status;
 }

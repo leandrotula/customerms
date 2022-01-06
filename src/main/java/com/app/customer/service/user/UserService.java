@@ -1,5 +1,7 @@
 package com.app.customer.service.user;
 
+import com.app.customer.resource.domain.user.StatusRequest;
+import com.app.customer.resource.domain.user.UserRequest;
 import com.app.customer.service.domain.User;
 
 import java.util.List;
@@ -14,4 +16,10 @@ public interface UserService {
   Optional<User> getUser(String username);
 
   List<User> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy);
+
+  void delete(Long userId);
+
+  User update(Long userId, String password, UserRequest userRequest);
+
+  User updateStatus(Long userId, StatusRequest statusRequest);
 }

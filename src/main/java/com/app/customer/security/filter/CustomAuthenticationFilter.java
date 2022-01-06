@@ -22,7 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.app.customer.security.SecurityConstants.*;
+import static com.app.customer.security.SecurityConstants.ACCESS_TOKEN;
+import static com.app.customer.security.SecurityConstants.PASSWORD;
+import static com.app.customer.security.SecurityConstants.REFRESH_TOKEN;
+import static com.app.customer.security.SecurityConstants.ROLES;
+import static com.app.customer.security.SecurityConstants.USERNAME;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -60,13 +65,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     String refreshToken = JWT.create().withSubject(user.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) // 30 minutes
         .withIssuer(request.getRequestURL().toString())
-        .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+        .withClaim(ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
         .sign(algorithm);
 
     final Map<String, String> tokens = new HashMap<>();
     tokens.put(ACCESS_TOKEN, accessToken);
     tokens.put(REFRESH_TOKEN, refreshToken);
 
+    response.setContentType(APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     super.successfulAuthentication(request, response, chain, authentication);
   }

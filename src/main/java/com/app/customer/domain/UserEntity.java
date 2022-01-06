@@ -21,6 +21,7 @@ public class UserEntity {
   private String name;
   private String username;
   private String password;
+  private String status;
 
   @ManyToMany(fetch = FetchType.EAGER)
   private Collection<RoleEntity> roles = new ArrayList<>();

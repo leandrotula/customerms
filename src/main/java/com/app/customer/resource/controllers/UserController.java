@@ -1,5 +1,6 @@
-package com.app.customer.resource;
+package com.app.customer.resource.controllers;
 
+import com.app.customer.resource.domain.user.StatusRequest;
 import com.app.customer.resource.domain.user.UserRequest;
 import com.app.customer.resource.domain.user.UserResponse;
 import com.app.customer.service.domain.User;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.app.customer.security.SecurityConstants.PASSWORD;
 
 @RestController
 @RequestMapping("/v1/api")
@@ -33,13 +36,42 @@ public class UserController {
   }
 
   @PostMapping("/users")
-  public ResponseEntity<UserResponse> saveUser(@RequestBody UserRequest userRequest, HttpServletRequest httpServletRequest) {
+  public ResponseEntity<UserResponse> save(@RequestBody UserRequest userRequest, HttpServletRequest httpServletRequest) {
 
-    String password = httpServletRequest.getParameter("password");
+    String password = httpServletRequest.getHeader("password");
     User user = User.builder().name(userRequest.getName()).username(userRequest.getUsername()).password(password).build();
-    URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/api/user/save").toUriString());
+    URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/api/users").toUriString());
     User savedUser = userService.saveUser(user);
     return ResponseEntity.created(uri).body(convertToUserResponse(savedUser));
+  }
+
+  @PutMapping("/users/{userId}")
+  public ResponseEntity<UserResponse> update(@RequestBody UserRequest userRequest,
+      @PathVariable Long userId, HttpServletRequest httpServletRequest) {
+
+    String password = httpServletRequest.getHeader(PASSWORD);
+    User user = userService.update(userId, password, userRequest);
+    URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/api/users").toUriString());
+
+    return ResponseEntity.created(uri).body(convertToUserResponse(user));
+  }
+
+  @PatchMapping("/users/{userId}")
+  public ResponseEntity<UserResponse> updateStatus(@PathVariable Long userId, @RequestBody StatusRequest statusRequest) {
+
+    User user = userService.updateStatus(userId, statusRequest);
+    URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/api/users").toUriString());
+
+    return ResponseEntity.created(uri).body(convertToUserResponse(user));
+
+  }
+
+  @DeleteMapping("/users/{userId}")
+  public ResponseEntity<?> delete(@PathVariable Long userId) {
+
+    userService.delete(userId);
+
+    return ResponseEntity.ok().build();
   }
 
   @PostMapping("/users/{username}/roles/{roleName}")

@@ -7,5 +7,8 @@ import java.util.Optional;
 
 public interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
 
-  Optional<UserEntity> findByUsername(final String username);
+  Optional<UserEntity> findByUsernameAndStatusIgnoreCase(final String username, final String status);
+
+  Optional<UserEntity> findByIdAndStatus(final Long userId, final String status);
+
 }

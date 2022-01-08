@@ -1,4 +1,4 @@
-package com.app.customer.resource.domain.user;
+package com.app.customer.resource.domain.customer;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Value;
 
-@JsonDeserialize(builder = UserResponse.UserResponseBuilder.class)
+@JsonDeserialize(builder = CustomerResponse.CustomerResponseBuilder.class)
 @Value
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserResponse {
+public class CustomerResponse {
 
   private String name;
-  private String username;
+  private String surname;
+  private String photoUrl;
+  private String owner;
 }

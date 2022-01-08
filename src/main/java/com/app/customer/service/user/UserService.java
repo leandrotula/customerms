@@ -13,7 +13,7 @@ public interface UserService {
 
   void assignRoleToUser(String username, String roleName);
 
-  Optional<User> getUser(String username);
+  Optional<User> getUserByUsernameAndStatusActive(String username);
 
   List<User> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy);
 
@@ -22,4 +22,6 @@ public interface UserService {
   User update(Long userId, String password, UserRequest userRequest);
 
   User updateStatus(Long userId, StatusRequest statusRequest);
+
+  boolean existByUsernameAndStatus(String username);
 }

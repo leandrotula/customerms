@@ -2,6 +2,7 @@ package com.app.customer.storage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +28,12 @@ public class StorageServiceImpl implements StorageService {
   public String uploadFile(MultipartFile file) {
     File fileObj = convertMultiPartFileToFile(file);
     String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-    s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-    return "File uploaded : " + fileName;
+    PutObjectResult putObjectResult = s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+    boolean delete = fileObj.delete();
+    log.info("deleted {} ", delete);
+
+    return putObjectResult.getVersionId();
+
   }
 
   @Override

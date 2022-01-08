@@ -1,5 +1,6 @@
 package com.app.customer.security.filter;
 
+import com.app.customer.security.CustomUserDetail;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -21,7 +22,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.app.customer.security.SecurityConstants.*;
+import static com.app.customer.security.SecurityConstants.LOGIN;
+import static com.app.customer.security.SecurityConstants.REFRESH_TOKEN_API;
+import static com.app.customer.security.SecurityConstants.ROLES;
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -48,7 +51,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
           JWTVerifier verifier = JWT.require(algorithm).build();
           DecodedJWT decodedJWT = verifier.verify(token);
           String username = decodedJWT.getSubject();
-          String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+          String[] roles = decodedJWT.getClaim(ROLES).asArray(String.class);
           Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
           stream(roles).forEach(role -> {
             authorities.add(new SimpleGrantedAuthority(role));
@@ -70,7 +73,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         }
       } else {
-        filterChain.doFilter(request, response);
+        throw new IllegalStateException("Invalid token");
       }
     }
 

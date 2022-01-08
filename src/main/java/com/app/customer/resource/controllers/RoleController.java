@@ -30,11 +30,10 @@ public class RoleController {
 
   private RoleResponse createRoleResponse(Role role) {
 
-    final RoleResponse roleResponse = new RoleResponse();
-    roleResponse.setId(role.getId());
-    roleResponse.setName(role.getName());
-
-    return roleResponse;
+    return RoleResponse.builder()
+        .id(role.getId())
+        .name(role.getName())
+        .build();
   }
 
   private Role createRole(RoleRequest roleBody) {

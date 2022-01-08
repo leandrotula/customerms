@@ -52,10 +52,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Optional<User> getUser(String username) {
+  public Optional<User> getUserByUsernameAndStatusActive(String username) {
 
     log.info("fetching user {} ", username);
-    Optional<UserEntity> userEntity = userRepository.findByUsernameAndStatusIgnoreCase(username, Status.ACTIVE.name());
+    Optional<UserEntity> userEntity = userRepository.findByUsernameAndStatusIgnoreCase(username.toLowerCase(), Status.ACTIVE.name());
     return userEntity.map(this::convertToUser);
   }
 
@@ -117,6 +117,11 @@ public class UserServiceImpl implements UserService {
     } else {
       throw new RuntimeException("User not found");
     }
+  }
+
+  @Override
+  public boolean existByUsernameAndStatus(String username) {
+    return userRepository.existsByUsernameAndStatus(username, Status.ACTIVE.name());
   }
 
   // TODO extract mappers

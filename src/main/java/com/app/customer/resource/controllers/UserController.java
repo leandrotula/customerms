@@ -87,11 +87,11 @@ public class UserController {
   }
 
   private UserResponse convertToUserResponse(User user) {
-    final UserResponse userResponse = new UserResponse();
-    userResponse.setUsername(user.getUsername());
-    userResponse.setName(user.getName());
 
-    return userResponse;
+    return UserResponse.builder()
+        .name(user.getName())
+        .username(user.getUsername())
+        .build();
   }
 
 }

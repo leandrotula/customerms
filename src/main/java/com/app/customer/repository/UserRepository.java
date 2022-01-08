@@ -11,4 +11,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 
   Optional<UserEntity> findByIdAndStatus(final Long userId, final String status);
 
+  boolean existsByUsernameAndStatus(final String username, final String status);
+
 }

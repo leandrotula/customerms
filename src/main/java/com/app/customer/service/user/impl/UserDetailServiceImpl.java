@@ -1,5 +1,6 @@
 package com.app.customer.service.user.impl;
 
+import com.app.customer.exception.NotFoundException;
 import com.app.customer.service.domain.User;
 import com.app.customer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +26,15 @@ public class UserDetailServiceImpl implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
     log.info("Loading user information using username {} ", username);
-    Optional<User> user = userService.getUser(username);
+    Optional<User> user = userService.getUserByUsernameAndStatusActive(username);
 
     if (user.isEmpty()) {
-      throw new RuntimeException("User not found");
+      throw new NotFoundException("User not found");
     }
 
-    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    user.get().getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+    Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+    User providedUserApp = user.get();
+    providedUserApp.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
 
     return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), authorities);
   }

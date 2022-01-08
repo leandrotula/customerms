@@ -13,11 +13,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.app.customer.security.Roles.*;
+import static com.app.customer.security.Roles.ADMIN_ROLE;
+import static com.app.customer.security.Roles.USER_ROLE;
 import static com.app.customer.security.SecurityConstants.LOGIN;
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Configuration
 @EnableWebSecurity
@@ -41,14 +46,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    http.authorizeRequests().antMatchers(LOGIN, "/v1/token/refresh/**").permitAll();
-
-    //http.authorizeRequests().antMatchers(LOGIN, "/v1/api/upload/**").permitAll();
-
-    http.authorizeRequests().antMatchers(POST, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name());
-    http.authorizeRequests().antMatchers(DELETE, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name());
-    http.authorizeRequests().antMatchers(GET, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name());
-    http.authorizeRequests().antMatchers(PUT, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name());
+    http.authorizeRequests()
+        .antMatchers(LOGIN, "/v1/token/refresh/**").permitAll()
+        .antMatchers(POST, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
+        .antMatchers(DELETE, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
+        .antMatchers(GET, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
+        .antMatchers(PUT, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
+        .antMatchers(POST, "/v1/api/customers").hasAuthority(USER_ROLE.name());
 
 
     http.addFilter(customAuthenticationFilter);

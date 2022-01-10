@@ -62,11 +62,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(DELETE, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
         .antMatchers(GET, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
         .antMatchers(PUT, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name())
-        .antMatchers(PUT, "/v1/api/users/**").hasAnyAuthority(ADMIN_ROLE.name(), USER_ROLE.name())
-        .antMatchers(POST, "/v1/api/customers").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name())
-        .antMatchers(PUT, "/v1/api/customers").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name())
-        .antMatchers(DELETE, "/v1/api/customers").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name())
-        .antMatchers(GET, "/v1/api/customers").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name());
+        .antMatchers(PUT, "/v1/api/customers/**").hasAnyAuthority(ADMIN_ROLE.name(), USER_ROLE.name())
+        .antMatchers(POST, "/v1/api/customers/**").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name())
+        .antMatchers(DELETE, "/v1/api/customers/**").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name())
+        .antMatchers(GET, "/v1/api/customers/**").hasAnyAuthority(USER_ROLE.name(), ADMIN_ROLE.name());
 
     http.addFilter(customAuthenticationFilter);
     CustomAuthorizationFilter filter = new CustomAuthorizationFilter();

@@ -1,11 +1,11 @@
 package com.app.customer.service.customer.flow;
 
+import com.app.customer.exception.FileTreatmentException;
 import com.app.customer.exception.StorageException;
 import com.app.customer.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.function.Function;
@@ -24,9 +24,11 @@ public class FileFlowFunction implements Function<MultipartFile, String> {
       return "";
     }
     try {
+      String urlFile = storageService.getUrlFile(file.getOriginalFilename());
+      log.info("File path url {} ", urlFile);
       String version = storageService.uploadFile(file);
       log.info("File successfully uploaded, version {} ", version);
-      return storageService.getUrlFile(file.getOriginalFilename());
+      return urlFile;
     } catch (final Exception exception) {
       throw new StorageException(exception);
     }

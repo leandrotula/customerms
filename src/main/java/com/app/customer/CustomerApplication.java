@@ -37,35 +37,13 @@ public class CustomerApplication implements CommandLineRunner {
 		UserEntity user = new UserEntity();
 		user.setStatus(Status.ACTIVE.name());
 		user.setPassword(passwordEncoder.encode("test"));
-		user.setName("leandro");
-		user.setUsername("lea");
+		user.setName("admin");
+		user.setUsername("admin");
 		RoleEntity role = new RoleEntity();
 		role.setName(Roles.ADMIN_ROLE.name());
 		RoleEntity savedRole = roleRepository.save(role);
 		user.getRoles().add(savedRole);
 		repository.save(user);
-
-	/*	UserEntity user2 = new UserEntity();
-		user2.setStatus(Status.ACTIVE.name());
-		user2.setPassword(passwordEncoder.encode("test"));
-		user2.setName("juan");
-		user2.setUsername("juanelo");
-		RoleEntity role2 = new RoleEntity();
-		role2.setName(Roles.USER_ROLE.name());
-		RoleEntity savedRole2 = roleRepository.save(role2);
-		user2.getRoles().add(savedRole2);
-		repository.save(user2);
-
-		UserEntity user3 = new UserEntity();
-		user3.setStatus(Status.ACTIVE.name());
-		user3.setPassword(passwordEncoder.encode("test"));
-		user3.setName("guillermo");
-		user3.setUsername("guille");
-		RoleEntity role3 = new RoleEntity();
-		role3.setName(Roles.USER_ROLE.name());
-		RoleEntity savedRole3 = roleRepository.save(role3);
-		user3.getRoles().add(savedRole3);
-		repository.save(user3);*/
 
 	}
 }

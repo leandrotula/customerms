@@ -17,6 +17,7 @@ services:
     environment:
       - DATASOURCE_USERNAME=root
       - DATASOURCE_PASSWORD=123456
+      - ACTIVE_PROFILE=Default
     build: .
     restart: on-failure
     ports:

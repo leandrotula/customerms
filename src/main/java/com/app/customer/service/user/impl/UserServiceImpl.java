@@ -153,8 +153,6 @@ public class UserServiceImpl implements UserService {
     return userRepository.existsByUsernameAndStatus(username, Status.ACTIVE.name());
   }
 
-  // TODO extract mappers
-
   private List<User> mapToUserDomain(List<UserEntity> userEntities) {
     return userEntities.stream().map(this::convertToUser).collect(Collectors.toList());
   }

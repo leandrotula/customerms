@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=customerms
+    ports:
+      - "3307:3306"
+    volumes:
+      - db:/var/lib/mysql
+  app:
+    depends_on:
+      - mysqldb
+    environment:
+      - DATASOURCE_USERNAME=root
+      - DATASOURCE_PASSWORD=123456
+      - ACTIVE_PROFILE=Default
+    build: .
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:

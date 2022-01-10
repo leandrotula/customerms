@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "8cd4b7dd-307f-4890-bf9f-94599ec33d66",
+		"name": "customerms collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/login?username=lea&password=test",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuIiwicm9sZXMiOlsiVVNFUl9ST0xFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC92MS9hcGkvbG9naW4iLCJleHAiOjE2NDEzODkwMjJ9.tEZC43pQ2Eq2-Pi_pFbPw_nSlVBd80w6iUiItgru73E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/login?username=lea&password=test",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "lea"
+						},
+						{
+							"key": "password",
+							"value": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/customers",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWEiLCJyb2xlcyI6WyJBRE1JTl9ST0xFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC92MS9hcGkvbG9naW4iLCJleHAiOjE2NDE2NzIwMTd9.Q8oUKGWWT2ewsFAyS4JzajwRi7yQGYB0gvYDa9WMOHY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "file",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/leandro/Downloads/messi.jpg"
+						},
+						{
+							"key": "customer",
+							"value": "{\n \"customerId\": 11,\n  \"name\":\"mr\",\n  \"surname\":\"papanato\",\n  \"photoUrl\": \"s3://\"\n}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/customers",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"customers"
+					],
+					"query": [
+						{
+							"key": "file",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/token/refresh",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZWxvIiwicm9sZXMiOlsiVVNFUl9ST0xFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC92MS9hcGkvbG9naW4iLCJleHAiOjE2NDE2NjkyNDh9.RQ-9YqKXaBMeLy8AvwelhXW8tjZRv1YiDlSG-6akyG8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/token/refresh",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"token",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/customers/11",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndWlsbGUiLCJyb2xlcyI6WyJVU0VSX1JPTEUiXSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3YxL2FwaS9sb2dpbiIsImV4cCI6MTY0MTY3MDExN30.W_Oh_y-lfzCjEeZbcIIBxaN3zwsCrLGFFqIyOUvBVJ8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "customer",
+							"value": "{\n \"customerId\": 11,\n  \"name\":\"guille\",\n  \"surname\":\"papanato\",\n  \"photoUrl\": \"s3://\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/customers/11",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"customers",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWEiLCJyb2xlcyI6WyJBRE1JTl9ST0xFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC92MS9hcGkvbG9naW4iLCJleHAiOjE2NDE2OTM2MzV9.wuLFHkt0WJJ_Vp_rpqOpjGuMfqWgZePUOnPNjfEAjdE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 121,\n    \"name\": \"Jesi\",\n    \"surname\": \"Fu\",\n    \"username\": \"jfu\",\n    \"password\": \"test2\",\n    \"roles\": [\"USER_ROLE\", ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/users",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://{{IP}}:{{PORT}}/v1/api/users?pageNo=0&pageSize=20",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWEiLCJyb2xlcyI6WyJBRE1JTl9ST0xFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC92MS9hcGkvbG9naW4iLCJleHAiOjE2NDE2NzgxNzJ9.Rv5zBB459U8WPFhenh8MPBAfhkmdkriKqG8V1KLNzn4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{IP}}:{{PORT}}/v1/api/users?pageNo=0&pageSize=20",
+					"protocol": "http",
+					"host": [
+						"{{IP}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"v1",
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "pageNo",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "20"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

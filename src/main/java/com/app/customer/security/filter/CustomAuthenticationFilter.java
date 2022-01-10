@@ -3,6 +3,8 @@ package com.app.customer.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,9 +32,12 @@ import static com.app.customer.security.SecurityConstants.USERNAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
+@Setter
+@Getter
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
+  private String accessKey;
 
   public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
     this.authenticationManager = authenticationManager;
@@ -53,8 +58,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     User user = (User)authentication.getPrincipal();
 
-    //TODO how should i save this secret
-    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+    Algorithm algorithm = Algorithm.HMAC256(accessKey.getBytes());
 
     String accessToken = JWT.create().withSubject(user.getUsername())
         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000)) //10 minutes

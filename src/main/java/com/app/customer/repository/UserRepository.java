@@ -1,6 +1,7 @@
 package com.app.customer.repository;
 
 import com.app.customer.domain.UserEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;

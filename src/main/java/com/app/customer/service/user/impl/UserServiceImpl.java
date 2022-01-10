@@ -1,11 +1,16 @@
 package com.app.customer.service.user.impl;
 
+import com.app.customer.domain.RoleEntity;
 import com.app.customer.domain.Status;
 import com.app.customer.domain.UserEntity;
+import com.app.customer.exception.ExistentRecordException;
+import com.app.customer.exception.NotFoundException;
+import com.app.customer.exception.ServiceException;
 import com.app.customer.repository.RoleRepository;
 import com.app.customer.repository.UserRepository;
 import com.app.customer.resource.domain.user.StatusRequest;
 import com.app.customer.resource.domain.user.UserRequest;
+import com.app.customer.security.Roles;
 import com.app.customer.service.domain.User;
 import com.app.customer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +40,19 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public User saveUser(User user) {
+  public User save(UserRequest userRequest) {
+
+    User user = User.builder()
+        .name(userRequest.getName())
+        .username(userRequest.getUsername())
+        .password(userRequest.getPassword())
+        .roles(userRequest.getRoles())
+        .build();
+
+    Optional<UserEntity> optUserEntity = userRepository.findByUsernameAndStatusIgnoreCase(user.getUsername().toLowerCase(), Status.ACTIVE.name());
+    if(optUserEntity.isPresent()) {
+      throw new ExistentRecordException(String.format("User was already present with username %s ", user.getUsername()));
+    }
     log.info("saving user to database");
     user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -86,19 +104,23 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User update(Long userId, String password, UserRequest userRequest) {
+  public User update(Long userId, UserRequest userRequest) {
     Optional<UserEntity> userFound = userRepository.findById(userId);
     if (userFound.isPresent()) {
+      List<RoleEntity> roleEntities = getRoleEntities(userRequest.getRoles());
+
+      List<RoleEntity> savedRoles = roleRepository.saveAll(roleEntities);
       UserEntity userEntity = userFound.get();
       userEntity.setStatus(userRequest.getStatus().name());
       userEntity.setUsername(userRequest.getUsername());
       userEntity.setName(userRequest.getName());
-      userEntity.setPassword(passwordEncoder.encode(password));
+      userEntity.setRoles(savedRoles);
+      userEntity.setPassword(passwordEncoder.encode(userRequest.getPassword()));
       UserEntity updatedUser = userRepository.save(userEntity);
 
       return convertToUser(updatedUser);
     } else {
-      throw new RuntimeException("User not found");
+      throw new NotFoundException(String.format("User not found for id %s ", userId));
     }
   }
 
@@ -108,6 +130,13 @@ public class UserServiceImpl implements UserService {
 
     if (userFound.isPresent()) {
       UserEntity userEntity = userFound.get();
+
+      boolean containsDesiredRole = userEntity.getRoles().stream().map(RoleEntity::getName)
+          .collect(Collectors.toList()).contains(Roles.ADMIN_ROLE.name());
+      if (!containsDesiredRole) {
+
+        throw new ServiceException("Invalid operation, user does not have a desired role. This operation only changes admin status");
+      }
       userEntity.setStatus(statusRequest.getStatus().name());
 
       UserEntity newUserWithUpdatedStatus = userRepository.save(userEntity);
@@ -115,7 +144,7 @@ public class UserServiceImpl implements UserService {
 
       return convertToUser(savedUser);
     } else {
-      throw new RuntimeException("User not found");
+      throw new NotFoundException("User not found");
     }
   }
 
@@ -125,17 +154,21 @@ public class UserServiceImpl implements UserService {
   }
 
   // TODO extract mappers
+
   private List<User> mapToUserDomain(List<UserEntity> userEntities) {
     return userEntities.stream().map(this::convertToUser).collect(Collectors.toList());
   }
-
   private User convertToUser(UserEntity userEntity) {
+
+    List<Roles> roles = userEntity.getRoles().stream().map(roleEntity -> Roles.valueOf(roleEntity.getName())).collect(Collectors.toList());
+
     return User.builder()
         .id(userEntity.getId())
         .name(userEntity.getName())
         .username(userEntity.getUsername())
         .password(userEntity.getPassword())
-        .roles(userEntity.getRoles())
+        .roles(roles)
+        .status(userEntity.getStatus())
         .build();
   }
 
@@ -144,9 +177,38 @@ public class UserServiceImpl implements UserService {
     final UserEntity userEntity = new UserEntity();
     userEntity.setUsername(user.getUsername());
     userEntity.setPassword(user.getPassword());
-    userEntity.setRoles(user.getRoles());
+
+    List<RoleEntity> savedRoles = convertAndPersistRoles(user);
+
+    userEntity.setRoles(savedRoles);
     userEntity.setName(user.getName());
+    userEntity.setStatus(Status.ACTIVE.name());
 
     return userEntity;
+  }
+
+  private List<RoleEntity> convertAndPersistRoles(User user) {
+    List<RoleEntity> result = new ArrayList<>();
+    List<RoleEntity> roles = getRoleEntities(user.getRoles());
+    roles.forEach(role -> {
+      Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName(role.getName());
+      if (optionalRoleEntity.isPresent()) {
+        result.add(optionalRoleEntity.get());
+      } else {
+        final RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setName(role.getName());
+        RoleEntity newRole = roleRepository.save(roleEntity);
+        result.add(newRole);
+      }
+    });
+    return roleRepository.saveAll(result);
+  }
+
+  private List<RoleEntity> getRoleEntities(List<Roles> userRequest) {
+    return userRequest.stream().map(roles -> {
+      final RoleEntity roleEntity = new RoleEntity();
+      roleEntity.setName(roles.name());
+      return roleEntity;
+    }).collect(Collectors.toList());
   }
 }

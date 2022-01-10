@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @JsonDeserialize(builder = UserResponse.UserResponseBuilder.class)
 @Value
 @Builder
@@ -13,5 +15,8 @@ import lombok.Value;
 public class UserResponse {
 
   private String name;
+  private Long id;
   private String username;
+  private String status;
+  private List<String> roles;
 }

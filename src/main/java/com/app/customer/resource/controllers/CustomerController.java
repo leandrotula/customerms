@@ -33,7 +33,7 @@ public class CustomerController {
   private final CustomerService customerService;
 
   @PostMapping(value = "/customers")
-  public ResponseEntity<CustomerResponse> save(@RequestParam(value = "file") MultipartFile file, @RequestPart("customer") String customer) throws ServletException, IOException {
+  public ResponseEntity<CustomerResponse> save(@RequestParam(value = "file", required = false) MultipartFile file, @RequestPart("customer") String customer) throws ServletException, IOException {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String name = authentication.getName();

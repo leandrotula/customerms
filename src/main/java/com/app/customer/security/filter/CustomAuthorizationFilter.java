@@ -1,11 +1,13 @@
 package com.app.customer.security.filter;
 
-import com.app.customer.security.CustomUserDetail;
+import com.app.customer.exception.ServiceException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +33,11 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
+@Setter
+@Getter
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+  private String accessKey;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,8 +52,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         try {
 
           String token = authorizationHeader.substring("Bearer ".length());
-          //TODO treat this value as a env variable
-          Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); // use same secret value
+          Algorithm algorithm = Algorithm.HMAC256(accessKey.getBytes());
           JWTVerifier verifier = JWT.require(algorithm).build();
           DecodedJWT decodedJWT = verifier.verify(token);
           String username = decodedJWT.getSubject();
@@ -73,7 +78,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         }
       } else {
-        throw new IllegalStateException("Invalid token");
+        throw new ServiceException("Invalid token");
       }
     }
 

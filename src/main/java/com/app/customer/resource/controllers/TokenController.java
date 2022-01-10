@@ -2,6 +2,8 @@ package com.app.customer.resource.controllers;
 
 import com.app.customer.domain.RoleEntity;
 import com.app.customer.exception.ServiceException;
+import com.app.customer.security.Roles;
+import com.app.customer.security.SecurityConstants;
 import com.app.customer.service.domain.User;
 import com.app.customer.service.user.UserService;
 import com.auth0.jwt.JWT;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.app.customer.security.SecurityConstants.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RequestMapping("/v1/api")
@@ -53,7 +56,7 @@ public class TokenController {
               .withSubject(user.get().getUsername())
               .withExpiresAt(new Date(System.currentTimeMillis() + 10*60*1000))
               .withIssuer(request.getRequestURL().toString())
-              .withClaim("roles", user.get().getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
+              .withClaim(ROLES, user.get().getRoles().stream().map(Roles::name).collect(Collectors.toList()))
               .sign(algorithm);
           tokens.put("access_token", accessToken);
           tokens.put("refresh_token", refreshToken);

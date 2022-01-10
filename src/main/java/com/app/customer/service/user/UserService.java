@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-  User saveUser(User user);
+  User save(UserRequest userRequest);
 
   void assignRoleToUser(String username, String roleName);
 
@@ -19,7 +19,7 @@ public interface UserService {
 
   void delete(Long userId);
 
-  User update(Long userId, String password, UserRequest userRequest);
+  User update(Long userId, UserRequest userRequest);
 
   User updateStatus(Long userId, StatusRequest statusRequest);
 
